@@ -2,7 +2,6 @@ from load_data.loadData import loadImages
 from train_data.trainData import trainImages
 
 
-
 class SolveEquation(object):
 
     def __init__(self):
