@@ -1,9 +1,13 @@
 import keras
 import tensorflow as tf
-print(tf.__version__)
 import numpy as np
 import pandas as pd
 import pickle
+from keras.layers import Convolution2D, Flatten, Activation, Dropout, Dense, MaxPooling2D
+from keras.models import Sequential
+print("tf.__version__ is:", tf.__version__)
+print("tf.keras.__version__ is:", tf.keras.__version__)
+
 
 
 
@@ -11,28 +15,6 @@ def readFile(dataset_dir):
 	file_name = 'train_final.csv'
 	df = pd.read_csv('{}/{}'.format(dataset_dir, file_name), index_col = False)
 	return df
-
-def prepareModel(RANDOM_SEED, NUM_CLASSES):
-
-	np.random.seed(RANDOM_SEED)
-	model = keras.models.Sequential()
-	model.add(keras.layers.Conv2D(30, (5, 5), input_shape=(1, 28, 28), activation='relu', data_format='channels_first'))
-	model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
-	model.add(keras.layers.Conv2D(15, (2, 2), activation='relu'))
-	model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
-	model.add(keras.layers.Dropout(0.33))
-
-	model.add(keras.layers.Flatten())
-	model.add(keras.layers.Dense(128, activation='relu'))
-	model.add(keras.layers.Dense(64, activation='relu'))
-	model.add(keras.layers.Dense(32, activation='relu'))
-	model.add(keras.layers.Dense(NUM_CLASSES, activation='softmax'))
-	model.compile(
-		loss=keras.losses.categorical_crossentropy, 
-		optimizer = keras.optimizers.Adam(lr = 0.001),
-		metrics=['accuracy']
-	)
-	return model
 
 
 
@@ -51,13 +33,11 @@ def saveModel(model, model_savedir="../models", savefile_model_name = 'final_mod
 def trainImages(dataset_dir = '.', model_savedir="../models", savefile_model_name = 'final_model'):
 
 	NUM_CLASSES = 13
-	RANDOM_SEED = 100
-	BATCH_SIZE = 1200
-	VERBOSES = 3
+	BATCH_SIZE = 1
+	VERBOSES = 1
 	EPOCHS = 10
 
 	df = readFile(dataset_dir)
-
 	labels = df[['784']]
 	labels = np.array(labels)
 
@@ -68,14 +48,28 @@ def trainImages(dataset_dir = '.', model_savedir="../models", savefile_model_nam
 
 	dataset = []
 	for i in range(len(df)):
-		dataset.append(np.array(df[i : i+1]).reshape(1, 28, 28))
+		dataset.append(np.array(df[i:i+1]).reshape(1, 28, 28))
 	dataset = np.array(dataset)
 
-	
-	model = prepareModel(RANDOM_SEED, NUM_CLASSES)
+	model = Sequential()
+	model.add(Convolution2D(30, (5, 5), input_shape=(1, 28, 28), activation='relu', data_format='channels_first'))
+	model.add(MaxPooling2D(2,2, dim_ordering='tf'))
+	model.add(Convolution2D(15, (3, 3), activation='relu'))
+	model.add(MaxPooling2D(2,2, dim_ordering='tf'))
+	model.add(Dropout(0.2))
+
+	model.add(Flatten())
+	model.add(Dense(128, activation='relu'))
+	model.add(Dense(50, activation='relu'))
+	model.add(Dense(NUM_CLASSES, activation='softmax'))
+	model.compile(
+		loss="categorical_crossentropy", 
+		optimizer = "adam",
+		metrics=['accuracy']
+	)
 	print(model.summary())
 
-	# model.fit(model = model, dataset, labels, epochs=EPOCHS, batch_size = BATCH_SIZE, verbose = VERBOSES)
+	model.fit(dataset, cat, epochs=10, batch_size=500, shuffle=True, verbose=1)
 
 	saveModel(model, model_savedir, savefile_model_name)
 

@@ -87,14 +87,14 @@ def load_images(dataset_dir):
     return dataset
 
 
-def loadImages(dataset_dir="../dataset", save_dir="../train_data"):
+def loadAndSaveImages(dataset_dir="../dataset", save_dir="../train_data"):
     data = load_images(dataset_dir)
     print("Total Images are: " + str(len(data)))
     saveDataset(data, save_dir)
 
 
 def main():
-    loadImages()
+    loadAndSaveImages()
 
 
 if __name__ == "__main__":

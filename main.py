@@ -1,4 +1,4 @@
-from load_data.loadData import loadImages
+from load_data.loadData import loadAndSaveImages
 from train_data.trainData import trainImages
 
 
@@ -12,11 +12,12 @@ class SolveEquation(object):
         self.savefile_model_name = 'final_model'
 
 
-    def load_dataset(self):
-        loadImages(
+    def load_and_save_dataset(self):
+        loadAndSaveImages(
         	dataset_dir = self.dataset_dir, 
         	save_dir = self.train_dataset_save_dir
         )
+
 
     def train_data(self):
     	trainImages(
@@ -32,8 +33,9 @@ class SolveEquation(object):
 
 def main():
     solve = SolveEquation()
-    # solve.load_dataset()
+    # solve.load_and_save_dataset()
     solve.train_data()
+
 
 
 if __name__ == '__main__':
