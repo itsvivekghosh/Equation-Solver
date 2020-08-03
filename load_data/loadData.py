@@ -13,16 +13,14 @@ def load_images_from_folder(folder):
     train_data = []
 
     for filename in os.listdir(folder):
+
         img = cv2.imread(os.path.join(folder, filename), cv2.IMREAD_GRAYSCALE)
         img = ~img
 
         if img is not None:
 
             ret, thresh = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
-            ctrs, ret = cv2.findContours(
-                thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE
-            )
-
+            ctrs,ret = cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
             cnt = sorted(ctrs, key=lambda ctr: cv2.boundingRect(ctr)[0])
             w = int(28)
             h = int(28)
@@ -57,7 +55,7 @@ def load_images(dataset_dir):
     folders = os.listdir(dataset_dir)
 
     for folder_name in folders:
-
+        print(dataset_dir, folder_name)
         data = load_images_from_folder(dataset_dir + '/' + folder_name)
 
         if folder_name == "+":
